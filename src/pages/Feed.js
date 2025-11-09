@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { FiTrendingUp, FiUsers, FiBriefcase, FiStar, FiSearch, FiX, FiZap } from 'react-icons/fi';
+import { FiTrendingUp, FiStar, FiSearch, FiX, FiZap } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import CreatePost from '../components/CreatePost';
 import PostCard from '../components/PostCard';
@@ -14,7 +14,6 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [trendingPosts, setTrendingPosts] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ posts: [], users: [] });
@@ -29,7 +28,7 @@ const Feed = () => {
   useEffect(() => {
     fetchPosts();
     fetchTrendingPosts();
-    fetchSuggestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -91,15 +90,6 @@ const Feed = () => {
     }
   };
 
-  const fetchSuggestions = async () => {
-    // Mock suggestions - in real app, this would come from AI recommendations
-    setSuggestions([
-      { type: 'connection', name: 'John Doe', title: 'Software Engineer at Google' },
-      { type: 'connection', name: 'Jane Smith', title: 'Product Manager at Meta' },
-      { type: 'job', title: 'Senior Full Stack Developer', company: 'Tech Corp' },
-    ]);
-  };
-
   const handleSearch = async (query) => {
     if (!query || query.trim().length === 0) {
       setSearchResults({ posts: [], users: [] });
@@ -142,7 +132,7 @@ const Feed = () => {
     setLoadingSummary(true);
     try {
       const topPosts = trendingPosts.slice(0, 5).map(p => p.text).join('\n\n');
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/ai/analyze-content`,
         { content: topPosts },
         {

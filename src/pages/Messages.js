@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
-import { FiMessageCircle, FiSend, FiX, FiSearch, FiUser, FiLoader } from 'react-icons/fi';
+import { FiMessageCircle, FiSend, FiUser, FiLoader } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './Messages.css';
 
@@ -90,6 +90,7 @@ const Messages = () => {
         clearTimeout(typingTimeoutRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, token]);
 
   useEffect(() => {
@@ -103,6 +104,7 @@ const Messages = () => {
         socketRef.current?.emit('leave-conversation', selectedConversation._id);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation]);
 
   useEffect(() => {
