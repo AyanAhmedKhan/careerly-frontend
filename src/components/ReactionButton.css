@@ -1,0 +1,138 @@
+.reaction-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  position: relative;
+}
+
+.reaction-btn:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.reaction-btn.reaction-like {
+  background: rgba(24, 119, 242, 0.1);
+  color: #1877f2;
+}
+
+.reaction-btn.reaction-love {
+  background: rgba(240, 40, 73, 0.1);
+  color: #f02849;
+}
+
+.reaction-btn.reaction-laugh {
+  background: rgba(251, 189, 44, 0.1);
+  color: #fbbd2c;
+}
+
+.reaction-btn.reaction-cry {
+  background: rgba(251, 189, 44, 0.1);
+  color: #fbbd2c;
+}
+
+.reaction-btn.reaction-wow {
+  background: rgba(251, 189, 44, 0.1);
+  color: #fbbd2c;
+}
+
+.reaction-btn.reaction-angry {
+  background: rgba(228, 30, 63, 0.1);
+  color: #e41e3f;
+}
+
+.reaction-emoji {
+  font-size: 1.2rem;
+  display: inline-block;
+  line-height: 1;
+}
+
+.reaction-label {
+  font-size: 0.9rem;
+}
+
+.reactions-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 0.5rem;
+  background: white;
+  border-radius: 30px;
+  padding: 0.5rem;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 0.25rem;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.reaction-option {
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.reaction-option:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.2) translateY(-5px);
+}
+
+.reaction-option.active {
+  background: rgba(0, 119, 181, 0.1);
+  border: 2px solid rgba(0, 119, 181, 0.3);
+}
+
+.reaction-option span {
+  display: block;
+  line-height: 1;
+}
+
+.reaction-count {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .reactions-picker {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .reaction-option {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+}
+
