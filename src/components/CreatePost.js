@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { FiImage, FiSend, FiX, FiStar, FiZap, FiTrendingUp } from 'react-icons/fi';
+import { FiImage, FiSend, FiX, FiStar, FiZap } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './CreatePost.css';
 

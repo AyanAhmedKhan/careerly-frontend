@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -19,13 +19,8 @@ const Recommendations = () => {
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    if (user && token) {
-      fetchConnectionRecommendations();
-    }
-  }, [user, token]);
-
-  const fetchConnectionRecommendations = async () => {
+  const fetchConnectionRecommendations = useCallback(async () => {
+    if (!token) return;
     setLoadingConnections(true);
     try {
       const response = await axios.get(`${API_URL}/ai/recommend-connections`, {
@@ -38,7 +33,13 @@ const Recommendations = () => {
     } finally {
       setLoadingConnections(false);
     }
-  };
+  }, [token, API_URL]);
+
+  useEffect(() => {
+    if (user && token) {
+      fetchConnectionRecommendations();
+    }
+  }, [user, token, fetchConnectionRecommendations]);
 
   const fetchJobRecommendations = async () => {
     setLoadingJobs(true);
