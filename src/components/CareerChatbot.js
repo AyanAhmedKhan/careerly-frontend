@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { FiMessageCircle, FiSend, FiX, FiMinimize2, FiMaximize2, FiTrash2, FiBot } from 'react-icons/fi';
+import { FiMessageCircle, FiSend, FiX, FiMinimize2, FiMaximize2, FiTrash2, FiZap } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import './CareerChatbot.css';
@@ -164,7 +164,7 @@ const CareerChatbot = () => {
             <div className="chatbot-header">
               <div className="header-info">
                 <div className="bot-avatar">
-                  <FiBot />
+                  <FiZap />
                 </div>
                 <div>
                   <h3>Careerly Assistant</h3>
@@ -213,7 +213,7 @@ const CareerChatbot = () => {
                         <div className="message-content">
                           {message.role === 'assistant' && (
                             <div className="bot-icon">
-                              <FiBot />
+                              <FiZap />
                             </div>
                           )}
                           <div className="message-bubble">
@@ -231,9 +231,9 @@ const CareerChatbot = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
-                      <div className="message-content">
+                        <div className="message-content">
                         <div className="bot-icon">
-                          <FiBot />
+                          <FiZap />
                         </div>
                         <div className="message-bubble loading">
                           <div className="typing-indicator">
