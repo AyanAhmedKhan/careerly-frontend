@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { FiTrendingUp, FiUsers, FiBriefcase, FiStar, FiSearch, FiX, FiZap } from 'react-icons/fi';
+import { FiTrendingUp, FiStar, FiSearch, FiX, FiZap } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import CreatePost from '../components/CreatePost';
 import PostCard from '../components/PostCard';
