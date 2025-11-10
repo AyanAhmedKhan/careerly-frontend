@@ -71,21 +71,18 @@ const Login = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-            <div className="brand-logo" aria-hidden>
-              <motion.div className="logo-mark" animate={{ rotate: [0, 10, -8, 0], scale: [1, 1.06, 1.02, 1] }} transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}>💼</motion.div>
-            </div>
-            <h1>Welcome Back</h1>
+          <h1>Welcome Back</h1>
           <p>Sign in to continue to Careerly Portal</p>
         </motion.div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <motion.div
-            className="form-group inline-icon"
+            className="form-group"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <FiMail className="input-icon" aria-hidden />
+            <FiMail className="input-icon" />
             <input
               type="email"
               name="email"
@@ -98,12 +95,12 @@ const Login = () => {
           </motion.div>
 
           <motion.div
-            className="form-group inline-icon"
+            className="form-group"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <FiLock className="input-icon" aria-hidden />
+            <FiLock className="input-icon" />
             <input
               type="password"
               name="password"

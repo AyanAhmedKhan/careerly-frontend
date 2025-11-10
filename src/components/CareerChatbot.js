@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { FiMessageCircle, FiSend, FiX, FiMinimize2, FiMaximize2, FiTrash2, FiUser } from 'react-icons/fi';
+import { FiMessageCircle, FiSend, FiX, FiMinimize2, FiMaximize2, FiTrash2, FiBot } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import './CareerChatbot.css';
@@ -40,11 +40,6 @@ const CareerChatbot = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const looksLikeJobOrCompany = (text) => {
-    if (!text) return false;
-    return /\bhiring\b|\brole at\b|\bstarted a new role at\b|\bjob\b|\bengineer\b|\bdeveloper\b|\binc\b|\bcorp\b/i.test(text);
   };
 
   const handleSendMessage = async (messageText = null) => {
@@ -169,7 +164,7 @@ const CareerChatbot = () => {
             <div className="chatbot-header">
               <div className="header-info">
                 <div className="bot-avatar">
-                  <FiUser />
+                  <FiBot />
                 </div>
                 <div>
                   <h3>Careerly Assistant</h3>
@@ -218,29 +213,13 @@ const CareerChatbot = () => {
                         <div className="message-content">
                           {message.role === 'assistant' && (
                             <div className="bot-icon">
-                              <FiUser />
+                              <FiBot />
                             </div>
                           )}
-                          {looksLikeJobOrCompany(message.content) ? (
-                            <div className="message-card">
-                              <div className="card-header">
-                                <div className="card-avatar">🏢</div>
-                                <div>
-                                  <h4 className="card-title">Company / Job Post</h4>
-                                  <div className="card-sub">Suggested by Careerly Assistant</div>
-                                </div>
-                              </div>
-                              <div className="card-body">
-                                <p>{message.content}</p>
-                                <span className="message-time">{formatTime(message.timestamp)}</span>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="message-bubble">
-                              <p>{message.content}</p>
-                              <span className="message-time">{formatTime(message.timestamp)}</span>
-                            </div>
-                          )}
+                          <div className="message-bubble">
+                            <p>{message.content}</p>
+                            <span className="message-time">{formatTime(message.timestamp)}</span>
+                          </div>
                         </div>
                       </motion.div>
                     ))}
@@ -254,7 +233,7 @@ const CareerChatbot = () => {
                     >
                       <div className="message-content">
                         <div className="bot-icon">
-                          <FiUser />
+                          <FiBot />
                         </div>
                         <div className="message-bubble loading">
                           <div className="typing-indicator">

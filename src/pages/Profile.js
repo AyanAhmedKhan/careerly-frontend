@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -9,7 +9,6 @@ import ProfileScore from '../components/ProfileScore';
 import { FiSettings, FiEdit2, FiMail, FiCalendar, FiUserPlus, FiMessageCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './Profile.css';
-import SplitText from '../components/SplitText';
 
 const Profile = () => {
   const { id } = useParams();
@@ -25,24 +24,14 @@ const Profile = () => {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  const checkConnectionStatus = useCallback((user) => {
-    if (!currentUser || !user) return;
-    if (user.connections?.some(conn => (conn._id || conn) === currentUser.id)) {
-      setConnectionStatus('connected');
-    } else if (user.connectionRequests?.some(req => 
-      req.user?._id === currentUser.id && req.type === 'received'
-    )) {
-      setConnectionStatus('pending_received');
-    } else if (user.connectionRequests?.some(req => 
-      req.user?._id === currentUser.id && req.type === 'sent'
-    )) {
-      setConnectionStatus('pending_sent');
-    } else {
-      setConnectionStatus('not_connected');
+  useEffect(() => {
+    if (id) {
+      fetchProfile();
+      fetchUserPosts();
     }
-  }, [currentUser]);
+  }, [id]);
 
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = async () => {
     if (!id) {
       setLoading(false);
       return;
@@ -59,9 +48,9 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, API_URL, checkConnectionStatus]);
+  };
 
-  const fetchUserPosts = useCallback(async () => {
+  const fetchUserPosts = async () => {
     if (!id) return;
     try {
       const response = await axios.get(`${API_URL}/posts`);
@@ -72,29 +61,7 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
-  }, [id, API_URL]);
-
-  useEffect(() => {
-    // Defensive: if id is missing or literally the string 'undefined', redirect to current user's profile
-    console.debug('Profile page id param:', id);
-    if (!id || id === 'undefined') {
-      if (currentUser?.id) {
-        navigate(`/profile/${currentUser.id}`);
-        return;
-      } else {
-        setLoading(false);
-        return;
-      }
-    }
-
-    if (id) {
-      fetchProfile();
-      fetchUserPosts();
-    }
-  }, [id, currentUser, fetchProfile, fetchUserPosts, navigate]);
- 
-
-  
+  };
 
   const handleUpdateProfile = async () => {
     try {
@@ -157,7 +124,23 @@ const Profile = () => {
     return joinDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
-  
+  const checkConnectionStatus = (user) => {
+    if (!currentUser || !user) return;
+    
+    if (user.connections?.some(conn => (conn._id || conn) === currentUser.id)) {
+      setConnectionStatus('connected');
+    } else if (user.connectionRequests?.some(req => 
+      req.user?._id === currentUser.id && req.type === 'received'
+    )) {
+      setConnectionStatus('pending_received');
+    } else if (user.connectionRequests?.some(req => 
+      req.user?._id === currentUser.id && req.type === 'sent'
+    )) {
+      setConnectionStatus('pending_sent');
+    } else {
+      setConnectionStatus('not_connected');
+    }
+  };
 
   const handleConnect = async () => {
     try {
@@ -182,7 +165,7 @@ const Profile = () => {
   const handleMessage = async () => {
     try {
       // Get or create conversation
-      await axios.get(`${API_URL}/chat/conversations/${id}`, {
+      const response = await axios.get(`${API_URL}/chat/conversations/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       // Navigate to messages page - the conversation will be selected automatically
@@ -204,24 +187,6 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
-      {/* Welcome animation */}
-      <div style={{ marginBottom: '1rem' }}>
-        <SplitText
-          text="Welcome to Careerly – AI Powered"
-          className="welcome-heading"
-          delay={100}
-          duration={0.6}
-          ease="power3.out"
-          splitType="chars"
-          from={{ opacity: 0, y: 40 }}
-          to={{ opacity: 1, y: 0 }}
-          threshold={0.1}
-          rootMargin="-100px"
-          textAlign="center"
-          tag="h2"
-          onLetterAnimationComplete={() => console.log('Welcome animation complete')}
-        />
-      </div>
       <motion.div
         className="profile-header"
         initial={{ opacity: 0, y: -20 }}

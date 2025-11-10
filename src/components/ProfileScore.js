@@ -4,14 +4,6 @@ import { FiAward, FiCheckCircle } from 'react-icons/fi';
 import './ProfileScore.css';
 
 const ProfileScore = ({ user }) => {
-  // Helper to determine level based on percentage - declare before use to avoid temporal dead zone
-  function getLevel(percentage) {
-    if (percentage >= 90) return { name: 'Expert', color: '#FF7A00' };
-    if (percentage >= 70) return { name: 'Professional', color: '#0077B5' };
-    if (percentage >= 50) return { name: 'Intermediate', color: '#00A0DC' };
-    return { name: 'Beginner', color: '#999' };
-  }
-
   const score = useMemo(() => {
     let totalScore = 0;
     let maxScore = 0;
@@ -55,7 +47,12 @@ const ProfileScore = ({ user }) => {
     };
   }, [user]);
 
-  
+  const getLevel = (percentage) => {
+    if (percentage >= 90) return { name: 'Expert', color: '#FF7A00' };
+    if (percentage >= 70) return { name: 'Professional', color: '#0077B5' };
+    if (percentage >= 50) return { name: 'Intermediate', color: '#00A0DC' };
+    return { name: 'Beginner', color: '#999' };
+  };
 
   const suggestions = useMemo(() => {
     const suggestions = [];

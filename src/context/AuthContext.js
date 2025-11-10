@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -18,29 +18,6 @@ export const AuthProvider = ({ children }) => {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.get(`${API_URL}/auth/me`);
-      // Normalize user shape: some endpoints return { _id } while others return { id }
-      const userData = response.data;
-      if (userData && userData._id && !userData.id) {
-        userData.id = userData._id;
-      }
-      setUser(userData);
-    } catch (error) {
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
-    } finally {
-      setLoading(false);
-    }
-  }, [API_URL]);
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -49,7 +26,25 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, [fetchUser]);
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(`${API_URL}/auth/me`);
+      setUser(response.data);
+    } catch (error) {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     try {

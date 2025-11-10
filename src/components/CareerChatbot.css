@@ -34,7 +34,7 @@
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 520px; /* increased width for better readability */
+  width: 420px;
   height: 600px;
   max-height: calc(100vh - 4rem);
   background: white;
@@ -77,13 +77,6 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-}
-
-.bot-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
 }
 
 .header-info h3 {
@@ -167,8 +160,8 @@
 .message-content {
   display: flex;
   align-items: flex-start;
-  gap: 0.9rem;
-  width: 100%; /* allow child bubbles/cards to size up to the defined max */
+  gap: 0.75rem;
+  max-width: 80%;
 }
 
 .message.user .message-content {
@@ -189,28 +182,23 @@
 }
 
 .message-bubble {
-  padding: 0.85rem 1.15rem;
-  border-radius: 16px;
-  max-width: 85%; /* allow wider bubbles for readability */
-  min-width: 220px; /* prevent very narrow bubbles */
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  max-width: 100%;
   word-wrap: break-word;
-  flex: 0 1 auto; /* allow bubbles to size within the row */
 }
 
 .message.user .message-bubble {
   background: linear-gradient(135deg, #0077B5, #00A0DC);
   color: white;
   border-bottom-right-radius: 4px;
-  align-self: flex-end;
 }
 
 .message.assistant .message-bubble {
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  color: #222;
-  border: 1px solid #eef4f8;
-  box-shadow: 0 6px 18px rgba(12, 48, 80, 0.04);
-  border-bottom-left-radius: 6px;
-  align-self: flex-start;
+  background: white;
+  color: #333;
+  border: 1px solid #e8e8e8;
+  border-bottom-left-radius: 4px;
 }
 
 .message-bubble p {
@@ -250,9 +238,9 @@
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: linear-gradient(135deg, #0077B5, #00A0DC);
+  background: #0077B5;
   border-radius: 50%;
-  animation: typing 1.2s infinite;
+  animation: typing 1.4s infinite;
 }
 
 .typing-indicator span:nth-child(2) {
@@ -306,12 +294,6 @@
   text-align: left;
   transition: all 0.3s;
   font-family: inherit;
-}
-
-.suggestions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
 }
 
 .suggestion-btn:hover {
@@ -377,66 +359,6 @@
   transition: all 0.3s;
   font-size: 1.1rem;
 }
-
-.send-btn svg {
-  transform: rotate(-20deg);
-}
-
-/* Message card (jobs/company posts) */
-.message-card {
-  background: #ffffff;
-  border: 1px solid #e6eef6;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(11, 46, 78, 0.04);
-  max-width: 85%; /* allow cards to be wider */
-  min-width: 260px; /* avoid collapsing into thin column */
-  overflow: hidden;
-  flex: 0 1 auto;
-}
-.card-header {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(90deg, rgba(0,119,181,0.06), rgba(0,160,220,0.02));
-}
-
-.message.assistant .card-header, .message.assistant .card-body { align-self: flex-start; }
-.message.user .message-card { align-self: flex-end; }
-.card-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-}
-.card-title {
-  margin: 0;
-  font-size: 0.98rem;
-  font-weight: 700;
-}
-.card-sub {
-  font-size: 0.78rem;
-  color: #557;
-}
-.card-body {
-  padding: 0.75rem 1rem 1rem 1rem;
-}
-.card-body p {
-  margin: 0 0 0.5rem 0;
-  line-height: 1.4;
-}
-
-/* Ensure message list has enough left padding so content can use width */
-.chatbot-messages {
-  padding-left: 1.75rem;
-  padding-right: 1.75rem;
-}
-
-/* small improvements */
-/* end of chatbot styles */
 
 .send-btn:hover:not(:disabled) {
   box-shadow: 0 4px 12px rgba(0, 119, 181, 0.4);
