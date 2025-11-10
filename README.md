@@ -297,6 +297,6 @@ This project is licensed under the ISC License.
 
 ---
 
-**Live Demo**: [Careerly on Vercel](https://your-app.vercel.app)
+**Live Demo**: [Careerly on Vercel](https://careerly-frontend.vercel.app/feed)
 
 **API Docs**: See [Backend README](https://github.com/AyanAhmedKhan/careerly-backend#readme)
