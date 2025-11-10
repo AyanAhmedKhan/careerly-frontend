@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -24,14 +24,25 @@ const Profile = () => {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  useEffect(() => {
-    if (id) {
-      fetchProfile();
-      fetchUserPosts();
+  const checkConnectionStatus = useCallback((user) => {
+    if (!currentUser || !user) return;
+    
+    if (user.connections?.some(conn => (conn._id || conn) === currentUser.id)) {
+      setConnectionStatus('connected');
+    } else if (user.connectionRequests?.some(req => 
+      req.user?._id === currentUser.id && req.type === 'received'
+    )) {
+      setConnectionStatus('pending_received');
+    } else if (user.connectionRequests?.some(req => 
+      req.user?._id === currentUser.id && req.type === 'sent'
+    )) {
+      setConnectionStatus('pending_sent');
+    } else {
+      setConnectionStatus('not_connected');
     }
-  }, [id]);
+  }, [currentUser]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!id) {
       setLoading(false);
       return;
@@ -48,9 +59,9 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, API_URL, checkConnectionStatus]);
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = useCallback(async () => {
     if (!id) return;
     try {
       const response = await axios.get(`${API_URL}/posts`);
@@ -61,7 +72,14 @@ const Profile = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
-  };
+  }, [id, API_URL]);
+
+  useEffect(() => {
+    if (id) {
+      fetchProfile();
+      fetchUserPosts();
+    }
+  }, [id, fetchProfile, fetchUserPosts]);
 
   const handleUpdateProfile = async () => {
     try {
@@ -124,24 +142,6 @@ const Profile = () => {
     return joinDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
-  const checkConnectionStatus = (user) => {
-    if (!currentUser || !user) return;
-    
-    if (user.connections?.some(conn => (conn._id || conn) === currentUser.id)) {
-      setConnectionStatus('connected');
-    } else if (user.connectionRequests?.some(req => 
-      req.user?._id === currentUser.id && req.type === 'received'
-    )) {
-      setConnectionStatus('pending_received');
-    } else if (user.connectionRequests?.some(req => 
-      req.user?._id === currentUser.id && req.type === 'sent'
-    )) {
-      setConnectionStatus('pending_sent');
-    } else {
-      setConnectionStatus('not_connected');
-    }
-  };
-
   const handleConnect = async () => {
     try {
       await axios.post(`${API_URL}/users/${id}/connect`);
@@ -165,7 +165,7 @@ const Profile = () => {
   const handleMessage = async () => {
     try {
       // Get or create conversation
-      const response = await axios.get(`${API_URL}/chat/conversations/${id}`, {
+      await axios.get(`${API_URL}/chat/conversations/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       // Navigate to messages page - the conversation will be selected automatically

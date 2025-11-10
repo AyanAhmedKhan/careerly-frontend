@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +14,6 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [trendingPosts, setTrendingPosts] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState({ posts: [], users: [] });
@@ -26,20 +25,7 @@ const Feed = () => {
 
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  useEffect(() => {
-    fetchPosts();
-    fetchTrendingPosts();
-    fetchSuggestions();
-  }, []);
-
-  useEffect(() => {
-    if (trendingPosts.length > 0 && !aiSummary && user) {
-      generateAISummary();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trendingPosts.length]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/posts`);
       setPosts(response.data);
@@ -49,7 +35,39 @@ const Feed = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
+
+  const fetchTrendingPosts = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/posts`);
+      // Sort by engagement (reactions + comments)
+      const sorted = response.data
+        .map(post => {
+          const reactions = post.reactions 
+            ? Object.values(post.reactions).reduce((sum, arr) => sum + (arr?.length || 0), 0)
+            : (post.likes?.length || 0);
+          const comments = post.comments?.length || 0;
+          return { ...post, engagement: reactions + comments * 2 };
+        })
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, 5);
+      setTrendingPosts(sorted);
+    } catch (error) {
+      console.error('Error fetching trending posts:', error);
+    }
+  }, [API_URL]);
+
+  useEffect(() => {
+    fetchPosts();
+    fetchTrendingPosts();
+  }, [fetchPosts, fetchTrendingPosts]);
+
+  useEffect(() => {
+    if (trendingPosts.length > 0 && !aiSummary && user) {
+      generateAISummary();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trendingPosts.length, aiSummary, user]);
 
   const handlePostCreated = (newPost) => {
     setPosts([newPost, ...posts]);
@@ -71,34 +89,6 @@ const Feed = () => {
     setPosts(posts.map((post) => (post._id === updatedPost._id ? updatedPost : post)));
   };
 
-  const fetchTrendingPosts = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/posts`);
-      // Sort by engagement (reactions + comments)
-      const sorted = response.data
-        .map(post => {
-          const reactions = post.reactions 
-            ? Object.values(post.reactions).reduce((sum, arr) => sum + (arr?.length || 0), 0)
-            : (post.likes?.length || 0);
-          const comments = post.comments?.length || 0;
-          return { ...post, engagement: reactions + comments * 2 };
-        })
-        .sort((a, b) => b.engagement - a.engagement)
-        .slice(0, 5);
-      setTrendingPosts(sorted);
-    } catch (error) {
-      console.error('Error fetching trending posts:', error);
-    }
-  };
-
-  const fetchSuggestions = async () => {
-    // Mock suggestions - in real app, this would come from AI recommendations
-    setSuggestions([
-      { type: 'connection', name: 'John Doe', title: 'Software Engineer at Google' },
-      { type: 'connection', name: 'Jane Smith', title: 'Product Manager at Meta' },
-      { type: 'job', title: 'Senior Full Stack Developer', company: 'Tech Corp' },
-    ]);
-  };
 
   const handleSearch = async (query) => {
     if (!query || query.trim().length === 0) {
@@ -142,7 +132,7 @@ const Feed = () => {
     setLoadingSummary(true);
     try {
       const topPosts = trendingPosts.slice(0, 5).map(p => p.text).join('\n\n');
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/ai/analyze-content`,
         { content: topPosts },
         {

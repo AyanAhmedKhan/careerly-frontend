@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
-import { FiMessageCircle, FiSend, FiX, FiSearch, FiUser, FiLoader } from 'react-icons/fi';
+import { FiMessageCircle, FiSend, FiUser, FiLoader } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './Messages.css';
 
@@ -27,6 +27,43 @@ const Messages = () => {
   const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
   const token = localStorage.getItem('token');
 
+  const fetchConversations = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${API_URL}/chat/conversations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConversations(response.data);
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      toast.error('Failed to load conversations');
+    } finally {
+      setLoading(false);
+    }
+  }, [token, API_URL]);
+
+  const fetchMessages = useCallback(async (conversationId) => {
+    if (!token) return;
+    try {
+      const response = await axios.get(`${API_URL}/chat/conversations/${conversationId}/messages`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessages(response.data);
+      
+      // Mark messages as read
+      await axios.put(`${API_URL}/chat/conversations/${conversationId}/read`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      toast.error('Failed to load messages');
+    }
+  }, [token, API_URL]);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
   useEffect(() => {
     if (!user || !token) return;
 
@@ -47,7 +84,7 @@ const Messages = () => {
     socketRef.current.on('new-message', (message) => {
       if (selectedConversation && message.conversation === selectedConversation._id) {
         setMessages(prev => [...prev, message]);
-        scrollToBottom();
+        setTimeout(() => scrollToBottom(), 100);
       }
       // Update conversation list
       fetchConversations();
@@ -90,7 +127,7 @@ const Messages = () => {
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [user, token]);
+  }, [user, token, SOCKET_URL, fetchConversations, selectedConversation, scrollToBottom]);
 
   useEffect(() => {
     if (selectedConversation) {
@@ -103,46 +140,11 @@ const Messages = () => {
         socketRef.current?.emit('leave-conversation', selectedConversation._id);
       }
     };
-  }, [selectedConversation]);
+  }, [selectedConversation, fetchMessages]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, typing]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const fetchConversations = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/chat/conversations`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setConversations(response.data);
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
-      toast.error('Failed to load conversations');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMessages = async (conversationId) => {
-    try {
-      const response = await axios.get(`${API_URL}/chat/conversations/${conversationId}/messages`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMessages(response.data);
-      
-      // Mark messages as read
-      await axios.put(`${API_URL}/chat/conversations/${conversationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      toast.error('Failed to load messages');
-    }
-  };
+  }, [messages, typing, scrollToBottom]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
